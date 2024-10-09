@@ -20,7 +20,7 @@ interface CardsState {
 function App() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [socketOpen, setSocketOpen] = useState(false);
-  const [intructions, setIntructions] = useState<string>('');
+  // const [intructions, setIntructions] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [showNameInput, setShowNameInput] = useState<boolean>(false);
   const [cards, setCards] = useState<CardsState>({
@@ -46,7 +46,7 @@ function App() {
       const payload = data.payload;
       switch (type) {
         case 'set_instructions':
-          setIntructions(payload);
+          // setIntructions(payload);
           setShowNameInput(true);
           break;
         case "welcome_user":
@@ -105,35 +105,36 @@ function App() {
 
   useEffect(() => {
 
-  // Select all cards and the deck
-  const cardsOnScreen = document.querySelectorAll('.card, .card-paused');
-  const deck = document.getElementById('deck');
+    // Select all cards and the deck
+    const cardsOnScreen = document.querySelectorAll('.card, .card-paused');
+    const deck = document.getElementById('deck');
 
-  // Get the deck's position
-  const deckRect = deck?.getBoundingClientRect();
+    // Get the deck's position
+    const deckRect = deck?.getBoundingClientRect();
 
 
     cardsOnScreen.forEach((card, index) => {
-      // Get the card's final position
-      const cardRect = card.getBoundingClientRect();
+      const cardElement = card as HTMLElement; // Cast to HTMLElement
+      const cardRect = cardElement.getBoundingClientRect();
 
       // Calculate the differences in position
 
-      console.log('card', card);
+      if (!deckRect)
+        return;
       const startX = deckRect.left - cardRect.left;
       const startY = deckRect.top - cardRect.top;
 
       // Set the CSS variables for the animation
-      card.style.setProperty('--start-x', `${startX}px`);
-      card.style.setProperty('--start-y', `${startY}px`);
+      cardElement.style.setProperty('--start-x', `${startX}px`);
+      cardElement.style.setProperty('--start-y', `${startY}px`);
 
       // Set the animation delay for staggering
       const delay = index * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--delay-step'));
-      card.style.animationDelay = `${delay}s`;
+      cardElement.style.animationDelay = `${delay}s`;
 
 
     });
-  }, [cards]); 
+  }, [cards]);
 
 
   async function handleStart() {
